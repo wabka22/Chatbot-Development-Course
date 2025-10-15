@@ -1,3 +1,21 @@
-import bot.database_client
+import sqlite3
+import os
+from dotenv import load_dotenv
 
-bot.database_client.recreate_database()
+def recreate_database() -> None:
+    connection = sqlite3.connect(os.getenv('SQLITE_DATABASE_PATH'))
+    with connection:
+        connection.execute("DROP TABLE IF EXISTS telegram_updates")
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS telegram_updates
+            (
+                id INTEGER PRIMARY KEY,
+                payload TEXT NOT NULL
+            )
+            """,
+        )
+    connection.close()
+
+load_dotenv()
+recreate_database()

@@ -12,7 +12,7 @@ def makeRequest(method: str, **kwargs) -> dict:
 
     request = urllib.request.Request(
         method='POST',
-        url=f"{os.getenv("TELEGRAM_BASE_URI")}/{method}",
+        url=f"{os.getenv("TELEGRAM_TOKEN")}/{method}",
         data=json_data,
         headers={'Content-Type': 'application/json',},
     )
@@ -24,12 +24,27 @@ def makeRequest(method: str, **kwargs) -> dict:
         return response_json["result"]
 
 
-def getUpdates(offset: int) -> dict:
-    return makeRequest("getUpdates", offset=offset)
+def getUpdates(**params) -> dict:
+    return makeRequest("getUpdates", **params)
 
 
-def sendMessage(chat_id: int, text: str) -> dict:
-    return makeRequest("sendMessage", chat_id=chat_id, text=text)
+def sendMessage(chat_id: int, text: str,**params) -> dict:
+    return makeRequest("sendMessage", chat_id=chat_id, text=text,**params)
+
+def sendPhoto(chat_id: int, photo: str, **params) -> dict:
+    return makeRequest("sendPhoto", chat_id=chat_id, photo=photo, **params)
+
+def sendSticker(chat_id: int, sticker: str, **params) -> dict:
+    return makeRequest("sendSticker", chat_id=chat_id, sticker=sticker, **params)
+
+def sendVoice(chat_id: int, voice: str, **params) -> dict:
+    return makeRequest("sendVoice", chat_id=chat_id, voice=voice, **params)
+
+def sendDocument(chat_id: int, document: str, **params) -> dict:
+    return makeRequest("sendDocument", chat_id=chat_id, document=document, **params)
+
+def sendVideo(chat_id: int, video: str, **params) -> dict:
+    return makeRequest("sendVideo", chat_id=chat_id, video=video, **params)
 
 def getMe() -> dict:
     return makeRequest("getMe")

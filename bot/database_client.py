@@ -9,10 +9,10 @@ load_dotenv()
 def recreate_database() -> None:
     connection = sqlite3.connect(os.getenv('SQLITE_DATABASE_PATH'))
     with connection:
-        connection.execute("DROP TABLE IF EXISTS telegram_events")
+        connection.execute("DROP TABLE IF EXISTS telegram_updates")
         connection.execute(
             """
-            CREATE TABLE IF NOT EXISTS telegram_events
+            CREATE TABLE IF NOT EXISTS telegram_updates
             (
                 id INTEGER PRIMARY KEY,
                 payload TEXT NOT NULL
@@ -26,6 +26,6 @@ def persist_updates(updates: list) -> None:
     with connection:
         data = []
         for update in updates:
-            data.append((json.dumps(update, ensure_ascii=False),))
-        connection.executemany("INSERT INTO telegram_events (payload) VALUES (?)", data)
+            data.append((json.dumps(update, ensure_ascii=False,indent=2),))
+        connection.executemany("INSERT INTO telegram_updates (payload) VALUES (?)", data)
     connection.close()
