@@ -1,6 +1,10 @@
 Chatbot-Development-Course
 --------------------------------
 ```bash
+# Скачивание репозитория
+git clone https://github.com/wabka22/Chatbot-Development-Course
+```
+```bash
 # Копирование примера файла окружения и его редактирование
 cp .env.base .env
 ```
@@ -25,6 +29,10 @@ python3 -m bot.recreate_database
 python3 -m bot
 ```
 ```bash
-# просмотр базы данных
+# база данных
 sqlite3 <database>.sqlite
+```
+```bash
+# просмотр содержимого 
+select * from telegram_updates order by id desc;
 ```
