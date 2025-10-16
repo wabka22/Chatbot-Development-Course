@@ -25,16 +25,6 @@ def persist_update(update: dict) -> None:
     connection = sqlite3.connect(os.getenv('SQLITE_DATABASE_PATH'))
     with connection:
         connection.execute(
-            """
-            CREATE TABLE IF NOT EXISTS telegram_updates
-            (
-                id INTEGER PRIMARY KEY,
-                payload TEXT NOT NULL
-            )
-            """
-        )
-        
-        connection.execute(
             "INSERT INTO telegram_updates (payload) VALUES (?)",
             (json.dumps(update, ensure_ascii=False, indent=2),)
         )
