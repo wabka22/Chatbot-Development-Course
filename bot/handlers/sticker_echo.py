@@ -12,4 +12,4 @@ class StickerEcho(Handler):
             chat_id=update["message"]["chat"]["id"],
             sticker=sticker_file_id
         )
-        return True
+        return False

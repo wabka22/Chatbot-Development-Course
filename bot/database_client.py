@@ -1,7 +1,6 @@
 import sqlite3
 import os
 import json
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,11 +20,22 @@ def recreate_database() -> None:
         )
     connection.close()
     
-def persist_updates(updates: list) -> None:
-    connection = sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH"))
+
+def persist_update(update: dict) -> None:
+    connection = sqlite3.connect(os.getenv('SQLITE_DATABASE_PATH'))
     with connection:
-        data = []
-        for update in updates:
-            data.append((json.dumps(update, ensure_ascii=False,indent=2),))
-        connection.executemany("INSERT INTO telegram_updates (payload) VALUES (?)", data)
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS telegram_updates
+            (
+                id INTEGER PRIMARY KEY,
+                payload TEXT NOT NULL
+            )
+            """
+        )
+        
+        connection.execute(
+            "INSERT INTO telegram_updates (payload) VALUES (?)",
+            (json.dumps(update, ensure_ascii=False, indent=2),)
+        )
     connection.close()

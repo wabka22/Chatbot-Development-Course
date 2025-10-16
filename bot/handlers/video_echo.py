@@ -12,4 +12,4 @@ class VideoEcho(Handler):
             chat_id=update["message"]["chat"]["id"],
             video=video_file_id
         )
-        return True
+        return False

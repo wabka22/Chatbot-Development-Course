@@ -14,4 +14,4 @@ class DocumentEcho(Handler):
             document=document_file_id,
             caption=f"Ваш файл: {file_name}"
         )
-        return True
+        return False

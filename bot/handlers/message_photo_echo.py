@@ -14,4 +14,4 @@ class MessagePhotoEcho(Handler):
             chat_id=update["message"]["chat"]["id"],
             photo=file_id
         )
-        return True
+        return False

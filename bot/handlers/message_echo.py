@@ -10,5 +10,5 @@ class MessageEcho(Handler):
                 chat_id=update["message"]["chat"]["id"],
                 text=update["message"]["text"],
         )
-        return True
+        return False
     
