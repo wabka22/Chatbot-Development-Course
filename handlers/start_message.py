@@ -1,7 +1,7 @@
 import json
 
 import bot.telegram_client
-import bot.database_client
+import database.database_client
 from bot.handlers.handler import Handler
 from bot.handlers.handler_status import HandlerStatus
 
@@ -17,8 +17,8 @@ class MessageStart(Handler):
     def handle(self, update: dict, state: str, data: dict) -> HandlerStatus:
         telegram_id = update["message"]["from"]["id"]
 
-        bot.database_client.clear_user_data(telegram_id)
-        bot.database_client.update_user_state(telegram_id, "WAIT_FOR_PIZZA_NAME")
+        database.database_client.clear_user_data(telegram_id)
+        database.database_client.update_user_state(telegram_id, "WAIT_FOR_PIZZA_NAME")
 
         bot.telegram_api_client.send_message(
             chat_id=update["message"]["chat"]["id"],

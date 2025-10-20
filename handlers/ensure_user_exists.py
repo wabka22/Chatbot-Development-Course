@@ -1,4 +1,4 @@
-from bot.database_client import ensure_user_exists
+from database.database_client import ensure_user_exists
 from bot.handlers.handler import Handler
 from bot.handlers.handler_status import HandlerStatus
 

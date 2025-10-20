@@ -1,5 +1,5 @@
 from bot.handlers.handler import Handler
-from bot.database_client import persist_update
+from database.database_client import persist_update
 
 class DatabaseLogger(Handler):
     def can_handle(self, update: dict) -> bool:
