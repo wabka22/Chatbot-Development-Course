@@ -27,24 +27,14 @@ def makeRequest(method: str, **kwargs) -> dict:
 def getUpdates(**params) -> dict:
     return makeRequest("getUpdates", **params)
 
-
-def sendMessage(chat_id: int, text: str,**params) -> dict:
-    return makeRequest("sendMessage", chat_id=chat_id, text=text,**params)
-
-def sendPhoto(chat_id: int, photo: str, **params) -> dict:
-    return makeRequest("sendPhoto", chat_id=chat_id, photo=photo, **params)
-
-def sendSticker(chat_id: int, sticker: str, **params) -> dict:
-    return makeRequest("sendSticker", chat_id=chat_id, sticker=sticker, **params)
-
-def sendVoice(chat_id: int, voice: str, **params) -> dict:
-    return makeRequest("sendVoice", chat_id=chat_id, voice=voice, **params)
-
-def sendDocument(chat_id: int, document: str, **params) -> dict:
-    return makeRequest("sendDocument", chat_id=chat_id, document=document, **params)
-
-def sendVideo(chat_id: int, video: str, **params) -> dict:
-    return makeRequest("sendVideo", chat_id=chat_id, video=video, **params)
-
 def getMe() -> dict:
     return makeRequest("getMe")
+
+def answer_callback_query(callback_query_id: str, **params) -> dict:
+    return makeRequest("answerCallbackQuery", callback_query_id=callback_query_id, **params)
+
+def sendMessage(chat_id: int,text : str, **params) -> dict:
+    return makeRequest("sendMessage", chat_id=chat_id,text=text, **params)
+
+def deleteMessage(chat_id: int,message_id : int, **params) -> dict:
+    return makeRequest("deleteMessage", chat_id=chat_id,message_id=message_id, **params)
