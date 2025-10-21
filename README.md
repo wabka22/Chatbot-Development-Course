@@ -26,5 +26,5 @@ sqlite3 <database>.sqlite
 ```
 ```bash
 # просмотр содержимого 
-watch -n 1 "select * from telegram_updates order by id desc LIMIT 1"
+watch -n 1 "sqlite3 -cmd '.mode box' -cmd '.headers on' <database>.sqlite 'SELECT * FROM users ORDER BY id DESC LIMIT 1;'"
 ```

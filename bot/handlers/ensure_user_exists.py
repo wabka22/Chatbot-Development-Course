@@ -1,7 +1,5 @@
 from database.database_client import ensure_user_exists
-from bot.handlers.handler import Handler
-from bot.handlers.handler_status import HandlerStatus
-
+from bot.handlers.handler import Handler, HandlerStatus
 
 class EnsureUserExists(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:

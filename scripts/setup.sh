@@ -15,7 +15,7 @@ echo "Установка зависимостей..."
 pip install -r requirements.txt
 
 echo "Инициализация базы данных..."
-python3 -m bot.recreate_database
+python3 database/recreate_database.py
 
 echo "Запуск бота..."
 python3 -m bot

@@ -2,7 +2,6 @@ import time
 import bot.telegram_client
 from bot.dispatcher import Dispatcher
 
-
 def start_long_polling(dispatcher: Dispatcher)-> None:
     next_update_offset = 0
     while True:

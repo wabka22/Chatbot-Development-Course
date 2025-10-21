@@ -1,9 +1,8 @@
 import json
-from bot.handlers.handler import Handler
+from bot.handlers.handler import Handler, HandlerStatus
 from database.database_client import get_user
-from bot.handlers.handler_status import HandlerStatus
 
-class Dispatcher:
+class Dispatcher:  
     def __init__(self):
         self._handlers: list[Handler] =[]
         

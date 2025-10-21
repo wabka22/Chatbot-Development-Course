@@ -1,5 +1,4 @@
 from bot.dispatcher import Dispatcher
-from bot.handlers.database_logger import DatabaseLogger
 from bot.long_polling import start_long_polling
 from bot.handlers import get_handlers
 

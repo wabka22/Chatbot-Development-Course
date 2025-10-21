@@ -1,0 +1,13 @@
+from abc import ABC, abstractmethod
+from enum import Enum
+
+class HandlerStatus(Enum):
+    CONTINUE = 0
+    STOP = 1
+
+class Handler(ABC):
+    @abstractmethod
+    def can_handle(self, update: dict, state: str, data: dict) -> bool: ...
+    
+    @abstractmethod
+    def handle(self, update: dict, state: str, data: dict) -> HandlerStatus: ...
