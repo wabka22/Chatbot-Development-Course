@@ -1,10 +1,9 @@
-import json
-
 import bot.telegram_client
 import database.database_client
-from bot.handlers.handler import Handler,HandlerStatus
+from bot.handlers.handler import Handler, HandlerStatus
+from bot.keyboards import Keyboards
 
-class SizeHandler(Handler):
+class SizeSelection(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:
         if "callback_query" not in update:
             return False
@@ -20,10 +19,10 @@ class SizeHandler(Handler):
         callback_data = update["callback_query"]["data"]
 
         size_mapping = {
-            "size_small": "Small (25cm)",
-            "size_medium": "Medium (30cm)",
-            "size_large": "Large (35cm)",
-            "size_xl": "Extra Large (40cm)",
+            "size_small": "Маленькая (25cm)",
+            "size_medium": "Средняя (30cm)",
+            "size_large": "Большая (35cm)",
+            "size_xl": "Супер большая (40cm)",
         }
 
         pizza_size = size_mapping.get(callback_data)
@@ -41,27 +40,6 @@ class SizeHandler(Handler):
         bot.telegram_client.sendMessage(
             chat_id=update["callback_query"]["message"]["chat"]["id"],
             text="🍻 Выберите напиток к пицце:",
-            reply_markup=json.dumps(
-                {
-                    "inline_keyboard": [
-                        [
-                            {"text": "🔴 Coca-Cola", "callback_data": "drink_coca_cola"},
-                            {"text": "🔵 Pepsi", "callback_data": "drink_pepsi"},
-                        ],
-                        [
-                            {"text": "🍊 Апельсиновый сок", "callback_data": "drink_orange_juice"},
-                            {"text": "🍎 Яблочный сок", "callback_data": "drink_apple_juice"},
-                        ],
-                        [
-                            {"text": "💧 Минеральная вода", "callback_data": "drink_water"},
-                            {"text": "🥤 Холодный чай Lipton", "callback_data": "drink_iced_tea"},
-                        ],
-                        [
-                            {"text": "🚫 Без напитков", "callback_data": "drink_none"},
-                        ],
-                    ],
-                }
-            ),
+            reply_markup=Keyboards.drinks_selection(),
         )
         return HandlerStatus.STOP
-    

@@ -1,8 +1,7 @@
-import json
-
 import bot.telegram_client
 import database.database_client
 from bot.handlers.handler import Handler, HandlerStatus
+from bot.keyboards import Keyboards
 
 class PizzaSelection(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:
@@ -25,6 +24,7 @@ class PizzaSelection(Handler):
         bot.telegram_client.answer_callback_query(update["callback_query"]["id"])
         
         chat_id = update["callback_query"]["message"]["chat"]["id"]
+        
         bot.telegram_client.deleteMessage(
             chat_id=chat_id,
             message_id=update["callback_query"]["message"]["message_id"],
@@ -38,19 +38,6 @@ class PizzaSelection(Handler):
         bot.telegram_client.sendMessage(
             chat_id=chat_id,
             text="👨‍🍳 Выберите размер пиццы:",
-            reply_markup=json.dumps(
-                {
-                    "inline_keyboard": [
-                        [
-                            {"text": "👶 Small (25cm)", "callback_data": "size_small"},
-                            {"text": "👦 Medium (30cm)", "callback_data": "size_medium"},
-                        ],
-                        [
-                            {"text": "👨 Large (35cm)", "callback_data": "size_large"},
-                            {"text": "🎪 XL (40cm)", "callback_data": "size_xl"},
-                        ],
-                    ],
-                }
-            ),
+            reply_markup=Keyboards.size_selection(),
         )
         return HandlerStatus.STOP

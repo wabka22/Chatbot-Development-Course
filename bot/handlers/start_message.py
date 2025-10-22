@@ -1,8 +1,7 @@
-import json
-
 import bot.telegram_client
 import database.database_client
 from bot.handlers.handler import Handler, HandlerStatus
+from bot.keyboards import Keyboards
 
 class MessageStart(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:
@@ -21,34 +20,13 @@ class MessageStart(Handler):
         bot.telegram_client.sendMessage(
             chat_id=update["message"]["chat"]["id"],
             text="🍕 ПРИВЕТСТВУЕМ В ЛУЧШЕЙ ПИЦЦЕРИИ! 🍕",
-            reply_markup=json.dumps({"remove_keyboard": True}),
+            reply_markup=Keyboards.remove_keyboard(),
         )
 
         bot.telegram_client.sendMessage(
             chat_id=update["message"]["chat"]["id"],
             text="Пожалуйста, выберите тип пиццы:",
-            reply_markup=json.dumps(
-                {
-                    "inline_keyboard": [
-                        [
-                            {"text": "🔴 Маргарита", "callback_data": "pizza_margherita"},
-                            {"text": "🌶️ Пепперони", "callback_data": "pizza_pepperoni"},
-                        ],
-                        [
-                            {"text": "🧀🧀🧀🧀 4 Сыра", "callback_data": "pizza_quattro_formaggi"},
-                            {"text": "🥓 Карбонара", "callback_data": "pizza_carbonara"},
-                        ],
-                        [
-                            {"text": "🔥 Диабло", "callback_data": "pizza_diavola"},
-                            {"text": "🥬 Веганская", "callback_data": "pizza_vegana"},
-                        ],
-                        [
-                            {"text": "🍄 Грибная", "callback_data": "pizza_funghi"},
-                            {"text": "🦐 С морепродуктами", "callback_data": "pizza_marinara"},
-                        ],
-                    ],
-                }
-            ),
+            reply_markup=Keyboards.pizza_selection(),
         )
+
         return HandlerStatus.STOP
-    

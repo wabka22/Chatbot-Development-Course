@@ -1,8 +1,7 @@
-import json
-
 import bot.telegram_client
 from database.database_client import clear_user_data, update_user_state
 from bot.handlers.handler import Handler, HandlerStatus
+from bot.keyboards import Keyboards
 
 class OrderResult(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:
@@ -33,14 +32,14 @@ class OrderResult(Handler):
             drink = data.get("drink", "Неизвестно")
 
             order_confirmation = f"""✅ **Заказ подтвержден!**
-            🍕 **Ваш заказ:**
-            • Пицца: {pizza_name}
-            • Размер: {pizza_size}
-            • Напиток: {drink}
+🍕 **Ваш заказ:**
+• Пицца: {pizza_name}
+• Размер: {pizza_size}
+• Напиток: {drink}
 
-            Спасибо за заказ! Ваша пицца будет готова в ближайшее время.
+Спасибо за заказ! Ваша пицца будет готова в ближайшее время.
 
-            Отправьте /start для нового заказа."""
+Отправьте /start для нового заказа."""
 
             bot.telegram_client.sendMessage(
                 chat_id=update["callback_query"]["message"]["chat"]["id"],
@@ -50,42 +49,18 @@ class OrderResult(Handler):
 
         elif callback_data == "order_restart":
             clear_user_data(telegram_id)
-
             update_user_state(telegram_id, "WAIT_FOR_PIZZA_NAME")
 
             bot.telegram_client.sendMessage(
-                    chat_id=update["callback_query"]["message"]["chat"]["id"],
-                    text="Оформляем новый заказ 🍕 😊",
-                    reply_markup=json.dumps({"remove_keyboard": True}),
-                )
-
+                chat_id=update["callback_query"]["message"]["chat"]["id"],
+                text="Оформляем новый заказ 🍕 😊",
+                reply_markup=Keyboards.remove_keyboard(),
+            )
 
             bot.telegram_client.sendMessage(
                 chat_id=update["callback_query"]["message"]["chat"]["id"],
                 text="Пожалуйста, выберите тип пиццы:",
-                reply_markup=json.dumps(
-                    {
-                        "inline_keyboard": [
-                            [
-                                {"text": "🔴 Маргарита", "callback_data": "pizza_margherita"},
-                                {"text": "🌶️ Пепперони", "callback_data": "pizza_pepperoni"},
-                            ],
-                            [
-                                {"text": "🧀🧀🧀🧀 4 Сыра", "callback_data": "pizza_quattro_formaggi"},
-                                {"text": "🥓 Карбонара", "callback_data": "pizza_carbonara"},
-                            ],
-                            [
-                                {"text": "🔥 Диабло", "callback_data": "pizza_diavola"},
-                                {"text": "🥬 Веганская", "callback_data": "pizza_vegana"},
-                            ],
-                            [
-                                {"text": "🍄 Грибная", "callback_data": "pizza_funghi"},
-                                {"text": "🦐 С морепродуктами", "callback_data": "pizza_marinara"},
-                            ],
-                        ],
-                    }
-                ),
+                reply_markup=Keyboards.pizza_selection(),
             )
 
         return HandlerStatus.STOP
-    

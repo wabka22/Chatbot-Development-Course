@@ -11,7 +11,6 @@ class Dispatcher:
                 self._handlers.append(handler)
         
     def _get_telegram_id_from_update(self, update: dict) -> int:
-        """Extract telegram_id from update object."""
         if "message" in update:
             return update["message"]["from"]["id"]
         elif "callback_query" in update:

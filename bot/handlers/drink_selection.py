@@ -1,10 +1,9 @@
-import json
-
 import bot.telegram_client
 import database.database_client
 from bot.handlers.handler import Handler, HandlerStatus
+from bot.keyboards import Keyboards
 
-class DrinksHandler(Handler):
+class DrinkSelection(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:
         if "callback_query" not in update:
             return False
@@ -47,28 +46,16 @@ class DrinksHandler(Handler):
 
         order_summary = f"""🍕 **Ваш заказ:**
 
-            **Пицца:** {pizza_name}
-            **Размер:** {pizza_size}
-            **Напиток:** {drink}
+**Пицца:** {pizza_name}
+**Размер:** {pizza_size}
+**Напиток:** {drink}
 
-            Всё верно?"""
+Всё верно?"""
 
         bot.telegram_client.sendMessage(
             chat_id=update["callback_query"]["message"]["chat"]["id"],
             text=order_summary,
             parse_mode="Markdown",
-            reply_markup=json.dumps(
-                {
-                    "inline_keyboard": [
-                        [
-                            {"text": "✅ Всё верно", "callback_data": "order_approve"},
-                            {
-                                "text": "🔄 Начать заново",
-                                "callback_data": "order_restart",
-                            },
-                        ],
-                    ],
-                },
-            ),
+            reply_markup=Keyboards.order_confirmation(),
         )
         return HandlerStatus.STOP
