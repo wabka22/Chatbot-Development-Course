@@ -3,6 +3,7 @@ import database.database_client
 from bot.handlers.handler import Handler, HandlerStatus
 from bot.keyboards import Keyboards
 
+
 class MessageStart(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:
         return (

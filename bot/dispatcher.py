@@ -2,14 +2,15 @@ import json
 from bot.handlers.handler import Handler, HandlerStatus
 from database.database_client import get_user
 
-class Dispatcher:  
+
+class Dispatcher:
     def __init__(self):
-        self._handlers: list[Handler] =[]
-        
+        self._handlers: list[Handler] = []
+
     def add_handlers(self, *handlers: Handler) -> None:
-            for handler in handlers:
-                self._handlers.append(handler)
-        
+        for handler in handlers:
+            self._handlers.append(handler)
+
     def _get_telegram_id_from_update(self, update: dict) -> int:
         if "message" in update:
             return update["message"]["from"]["id"]

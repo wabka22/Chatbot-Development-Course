@@ -11,11 +11,32 @@ fi
 echo "Активация виртуального окружения в текущей оболочке..."
 source .venv/bin/activate
 
-echo "Установка зависимостей..."
-pip install -r requirements.txt
+echo "Обновление pip и установка основных зависимостей..."
+pip install --upgrade pip
+pip install python-dotenv black ruff pytest
 
-echo "Инициализация базы данных..."
-python3 database/recreate_database.py
+echo "Установка зависимостей из requirements.txt..."
+if [ -f "requirements.txt" ]; then
+    pip install -r requirements.txt
+    echo "Зависимости установлены"
+else
+    echo "Файл requirements.txt не найден"
+fi
 
-echo "Запуск бота..."
-python3 -m bot
+echo "Обновление requirements.txt..."
+pip freeze > requirements.txt
+
+echo "Запуск форматирования кода black..."
+black .
+
+echo "Запуск проверки кода ruff..."
+ruff check . --fix
+
+# echo "Запуск тестов..."
+# pytest
+
+# echo "Инициализация базы данных..."
+# python3 database/recreate_database.py
+
+# echo "Загрузка переменных окружения и запуск бота..."
+# python3 -m bot

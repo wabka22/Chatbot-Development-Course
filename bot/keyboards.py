@@ -1,5 +1,5 @@
 class Keyboards:
-        
+
     @staticmethod
     def pizza_selection():
         return {
@@ -18,11 +18,14 @@ class Keyboards:
                 ],
                 [
                     {"text": "🍄 Грибная", "callback_data": "pizza_грибная"},
-                    {"text": "🦐 С морепродуктами", "callback_data": "pizza_морепродукты"},
+                    {
+                        "text": "🦐 С морепродуктами",
+                        "callback_data": "pizza_морепродукты",
+                    },
                 ],
             ]
         }
-    
+
     @staticmethod
     def size_selection():
         return {
@@ -37,7 +40,7 @@ class Keyboards:
                 ],
             ]
         }
-    
+
     @staticmethod
     def drinks_selection():
         return {
@@ -47,19 +50,25 @@ class Keyboards:
                     {"text": "🔵 Pepsi", "callback_data": "drink_pepsi"},
                 ],
                 [
-                    {"text": "🍊 Апельсиновый сок", "callback_data": "drink_orange_juice"},
+                    {
+                        "text": "🍊 Апельсиновый сок",
+                        "callback_data": "drink_orange_juice",
+                    },
                     {"text": "🍎 Яблочный сок", "callback_data": "drink_apple_juice"},
                 ],
                 [
                     {"text": "💧 Минеральная вода", "callback_data": "drink_water"},
-                    {"text": "🥤 Холодный чай Lipton", "callback_data": "drink_iced_tea"},
+                    {
+                        "text": "🥤 Холодный чай Lipton",
+                        "callback_data": "drink_iced_tea",
+                    },
                 ],
                 [
                     {"text": "🚫 Без напитков", "callback_data": "drink_none"},
                 ],
             ]
         }
-    
+
     @staticmethod
     def order_confirmation():
         return {
@@ -70,7 +79,7 @@ class Keyboards:
                 ],
             ]
         }
-    
+
     @staticmethod
     def remove_keyboard():
         return {"remove_keyboard": True}

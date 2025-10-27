@@ -3,6 +3,7 @@ from database.database_client import clear_user_data, update_user_state
 from bot.handlers.handler import Handler, HandlerStatus
 from bot.keyboards import Keyboards
 
+
 class OrderResult(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:
         if "callback_query" not in update:

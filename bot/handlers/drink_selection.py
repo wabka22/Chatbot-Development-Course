@@ -3,6 +3,7 @@ import database.database_client
 from bot.handlers.handler import Handler, HandlerStatus
 from bot.keyboards import Keyboards
 
+
 class DrinkSelection(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:
         if "callback_query" not in update:
@@ -32,7 +33,9 @@ class DrinkSelection(Handler):
         data["drink"] = selected_drink
 
         database.database_client.update_user_data(telegram_id, data)
-        database.database_client.update_user_state(telegram_id, "WAIT_FOR_ORDER_APPROVE")
+        database.database_client.update_user_state(
+            telegram_id, "WAIT_FOR_ORDER_APPROVE"
+        )
         bot.telegram_client.answer_callback_query(update["callback_query"]["id"])
 
         bot.telegram_client.deleteMessage(

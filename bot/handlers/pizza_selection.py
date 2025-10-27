@@ -3,6 +3,7 @@ import database.database_client
 from bot.handlers.handler import Handler, HandlerStatus
 from bot.keyboards import Keyboards
 
+
 class PizzaSelection(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:
         if "callback_query" not in update:
@@ -19,12 +20,14 @@ class PizzaSelection(Handler):
         callback_data = update["callback_query"]["data"]
 
         pizza_name = callback_data.replace("pizza_", "").replace("_", " ").title()
-        database.database_client.update_user_data(telegram_id, {"pizza_name": pizza_name})
+        database.database_client.update_user_data(
+            telegram_id, {"pizza_name": pizza_name}
+        )
         database.database_client.update_user_state(telegram_id, "WAIT_FOR_PIZZA_SIZE")
         bot.telegram_client.answer_callback_query(update["callback_query"]["id"])
-        
+
         chat_id = update["callback_query"]["message"]["chat"]["id"]
-        
+
         bot.telegram_client.deleteMessage(
             chat_id=chat_id,
             message_id=update["callback_query"]["message"]["message_id"],
@@ -34,7 +37,7 @@ class PizzaSelection(Handler):
             chat_id=chat_id,
             message_id=update["callback_query"]["message"]["message_id"] - 1,
         )
-        
+
         bot.telegram_client.sendMessage(
             chat_id=chat_id,
             text="👨‍🍳 Выберите размер пиццы:",

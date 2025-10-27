@@ -6,12 +6,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def persist_update(update: dict) -> None:
-    with sqlite3.connect(os.getenv('SQLITE_DATABASE_PATH')) as connection:
+    with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
         connection.execute(
             "INSERT INTO telegram_updates (payload) VALUES (?)",
-            (json.dumps(update, ensure_ascii=False, indent=2),)
+            (json.dumps(update, ensure_ascii=False, indent=2),),
         )
+
 
 def ensure_user_exists(telegram_id: int) -> None:
     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
@@ -29,16 +31,17 @@ def get_user(telegram_id: int) -> dict:
     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
         with connection:
             cursor = connection.execute(
-                "SELECT id, telegram_id, created_at, state, data FROM users WHERE telegram_id = ?", (telegram_id,)
+                "SELECT id, telegram_id, created_at, state, data FROM users WHERE telegram_id = ?",
+                (telegram_id,),
             )
             result = cursor.fetchone()
             if result:
                 return {
-                    'id': result[0],
-                    'telegram_id': result[1],
-                    'created_at': result[2],
-                    'state': result[3],
-                    'data': result[4]
+                    "id": result[0],
+                    "telegram_id": result[1],
+                    "created_at": result[2],
+                    "state": result[3],
+                    "data": result[4],
                 }
             return None
 
@@ -47,8 +50,7 @@ def update_user_state(telegram_id: int, state: str) -> None:
     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
         with connection:
             connection.execute(
-                "UPDATE users SET state = ? WHERE telegram_id = ?",
-                (state, telegram_id)
+                "UPDATE users SET state = ? WHERE telegram_id = ?", (state, telegram_id)
             )
 
 
@@ -57,7 +59,7 @@ def update_user_data(telegram_id: int, data: dict) -> None:
         with connection:
             connection.execute(
                 "UPDATE users SET data = ? WHERE telegram_id = ?",
-                (json.dumps(data, ensure_ascii=False, indent=2), telegram_id)
+                (json.dumps(data, ensure_ascii=False, indent=2), telegram_id),
             )
 
 
@@ -66,5 +68,5 @@ def clear_user_data(telegram_id: int) -> None:
         with connection:
             connection.execute(
                 "UPDATE users SET state = NULL, data = NULL WHERE telegram_id = ?",
-                (telegram_id,)
+                (telegram_id,),
             )

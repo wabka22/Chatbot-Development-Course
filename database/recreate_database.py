@@ -2,13 +2,14 @@ import sqlite3
 import os
 from dotenv import load_dotenv
 
+
 def recreate_database() -> None:
-    env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+    env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
     load_dotenv(env_path)
-    
-    with sqlite3.connect(os.getenv('SQLITE_DATABASE_PATH')) as connection:
+
+    with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:
         connection.execute("DROP TABLE IF EXISTS telegram_updates")
-        connection.execute("DROP TABLE IF EXISTS users")        
+        connection.execute("DROP TABLE IF EXISTS users")
         connection.execute(
             """
             CREATE TABLE telegram_updates
@@ -32,5 +33,6 @@ def recreate_database() -> None:
             """
         )
     print("База данных успешно создана!")
+
 
 recreate_database()

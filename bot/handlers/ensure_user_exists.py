@@ -1,6 +1,7 @@
 from database.database_client import ensure_user_exists
 from bot.handlers.handler import Handler, HandlerStatus
 
+
 class EnsureUserExists(Handler):
     def can_handle(self, update: dict, state: str, data: dict) -> bool:
         return "message" in update and "from" in update["message"]

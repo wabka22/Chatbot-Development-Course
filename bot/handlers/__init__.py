@@ -14,8 +14,9 @@ HANDLERS_CONFIG = [
     PizzaSelection,
     SizeSelection,
     DrinkSelection,
-    OrderResult
+    OrderResult,
 ]
+
 
 def get_handlers() -> list[Handler]:
     return [handler_class() for handler_class in HANDLERS_CONFIG]

@@ -5,7 +5,7 @@ from bot.handlers import get_handlers
 if __name__ == "__main__":
     try:
         dispatcher = Dispatcher()
-        dispatcher.add_handlers(*get_handlers()) 
+        dispatcher.add_handlers(*get_handlers())
         start_long_polling(dispatcher)
     except KeyboardInterrupt:
-      print("Thank you! The bot is disabled")
+        print("Thank you! The bot is disabled")
