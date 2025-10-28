@@ -35,8 +35,8 @@ ruff check . --fix
 # echo "Запуск тестов..."
 # pytest
 
-# echo "Инициализация базы данных..."
-# python3 database/recreate_database.py
+echo "Инициализация базы данных..."
+python3 bot/bot_core/recreate_database.py
 
-# echo "Загрузка переменных окружения и запуск бота..."
-# python3 -m bot
+echo "Загрузка переменных окружения и запуск бота..."
+python3 -m bot

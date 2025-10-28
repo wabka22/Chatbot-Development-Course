@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 
 def recreate_database() -> None:
-    env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
+    env_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
     load_dotenv(env_path)
 
     with sqlite3.connect(os.getenv("SQLITE_DATABASE_PATH")) as connection:

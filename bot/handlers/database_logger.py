@@ -1,11 +1,26 @@
+from bot.domain.messenger import Messenger
+from bot.domain.storage import Storage
 from bot.handlers.handler import Handler, HandlerStatus
-from database.database_client import persist_update
 
 
 class DatabaseLogger(Handler):
-    def can_handle(self, update: dict, user_state=None, user_data=None) -> bool:
+    def can_handle(
+        self,
+        update: dict,
+        state: str,
+        data: dict,
+        storage: Storage,
+        messenger: Messenger,
+    ) -> bool:
         return True
 
-    def handle(self, update: dict, user_state=None, user_data=None) -> HandlerStatus:
-        persist_update(update)
+    def handle(
+        self,
+        update: dict,
+        state: str,
+        data: dict,
+        storage: Storage,
+        messenger: Messenger,
+    ) -> HandlerStatus:
+        storage.persist_update(update)
         return HandlerStatus.CONTINUE
