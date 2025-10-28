@@ -29,16 +29,16 @@ class MessageStart(Handler):
     ) -> HandlerStatus:
         telegram_id = update["message"]["from"]["id"]
 
-        storage.database_client.clear_user_data(telegram_id)
-        storage.database_client.update_user_state(telegram_id, "WAIT_FOR_PIZZA_NAME")
+        storage.clear_user_data(telegram_id)
+        storage.update_user_state(telegram_id, "WAIT_FOR_PIZZA_NAME")
 
-        messenger.telegram_client.sendMessage(
+        messenger.sendMessage(
             chat_id=update["message"]["chat"]["id"],
             text="🍕 ПРИВЕТСТВУЕМ В ЛУЧШЕЙ ПИЦЦЕРИИ! 🍕",
             reply_markup=Keyboards.remove_keyboard(),
         )
 
-        messenger.telegram_client.sendMessage(
+        messenger.sendMessage(
             chat_id=update["message"]["chat"]["id"],
             text="Пожалуйста, выберите тип пиццы:",
             reply_markup=Keyboards.pizza_selection(),

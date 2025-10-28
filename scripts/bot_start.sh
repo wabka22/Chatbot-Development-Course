@@ -32,8 +32,8 @@ black .
 echo "Запуск проверки кода ruff..."
 ruff check . --fix
 
-# echo "Запуск тестов..."
-# pytest
+echo "Запуск тестов..."
+pytest
 
 echo "Инициализация базы данных..."
 python3 bot/bot_core/recreate_database.py

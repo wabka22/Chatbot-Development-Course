@@ -47,18 +47,18 @@ class DrinkSelection(Handler):
 
         data["drink"] = selected_drink
 
-        storage.database_client.update_user_data(telegram_id, data)
-        storage.database_client.update_user_state(telegram_id, "WAIT_FOR_ORDER_APPROVE")
-        messenger.telegram_client.answer_callback_query(update["callback_query"]["id"])
+        storage.update_user_data(telegram_id, data)
+        storage.update_user_state(telegram_id, "WAIT_FOR_ORDER_APPROVE")
+        messenger.answer_callback_query(update["callback_query"]["id"])
 
-        messenger.telegram_client.deleteMessage(
+        messenger.deleteMessage(
             chat_id=update["callback_query"]["message"]["chat"]["id"],
             message_id=update["callback_query"]["message"]["message_id"],
         )
 
-        pizza_name = storage.get("pizza_name", "Неизвестно")
-        pizza_size = storage.get("pizza_size", "Неизвестно")
-        drink = storage.get("drink", "Неизвестно")
+        pizza_name = data.get("pizza_name", "Неизвестно")
+        pizza_size = data.get("pizza_size", "Неизвестно")
+        drink = data.get("drink", "Неизвестно")
 
         order_summary = f"""🍕 **Ваш заказ:**
 
@@ -68,7 +68,7 @@ class DrinkSelection(Handler):
 
 Всё верно?"""
 
-        messenger.telegram_client.sendMessage(
+        messenger.sendMessage(
             chat_id=update["callback_query"]["message"]["chat"]["id"],
             text=order_summary,
             parse_mode="Markdown",

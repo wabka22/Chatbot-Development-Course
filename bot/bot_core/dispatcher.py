@@ -1,5 +1,3 @@
-import json
-
 from bot.domain.messenger import Messenger
 from bot.domain.storage import Storage
 from bot.handlers.handler import Handler, HandlerStatus
@@ -31,23 +29,24 @@ class Dispatcher:
 
         user_state = user.get("state") if user else None
 
-        user_data = user["order_json"] if user else "{}"
+        user_data = user.get("data") if user else {}
         if user_data is None:
-            user_data = "{}"
-        order_data = json.loads(user_data)
+            user_data = {}
+
+        data = user_data
 
         for handler in self._handlers:
             if handler.can_handle(
                 update,
                 user_state,
-                order_data,
+                data,
                 self._storage,
                 self._messenger,
             ):
                 status = handler.handle(
                     update,
                     user_state,
-                    order_data,
+                    data,
                     self._storage,
                     self._messenger,
                 )

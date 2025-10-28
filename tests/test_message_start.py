@@ -1,5 +1,5 @@
 from bot.bot_core.dispatcher import Dispatcher
-from bot.handlers.message_start import MessageStart
+from bot.handlers.start_message import MessageStart
 
 from tests.mocks import Mock
 
@@ -29,7 +29,7 @@ def test_message_start_handler():
     clear_user_data_called = False
     update_user_state_called = False
 
-    def clear_user_order_json(telegram_id: int) -> None:
+    def clear_user_data(telegram_id: int) -> None:
         assert telegram_id == 12345
 
         nonlocal clear_user_data_called
@@ -44,23 +44,23 @@ def test_message_start_handler():
 
     def get_user(telegram_id: int) -> dict | None:
         assert telegram_id == 12345
-        return {"state": None, "order_json": "{}"}
+        return {"state": None, "data": "{}"}
 
-    send_message_calls = []
+    sendMessage_calls = []
 
-    def send_message(chat_id: int, text: str, **kwargs) -> dict:
+    def sendMessage(chat_id: int, text: str, **kwargs) -> dict:
         assert chat_id == 12345
-        send_message_calls.append({"text": text, "kwargs": kwargs})
+        sendMessage_calls.append({"text": text, "kwargs": kwargs})
         return {"ok": True}
 
     mock_storage = Mock(
         {
-            "clear_user_order_json": clear_user_order_json,
+            "clear_user_data": clear_user_data,
             "update_user_state": update_user_state,
             "get_user": get_user,
         }
     )
-    mock_messenger = Mock({"send_message": send_message})
+    mock_messenger = Mock({"sendMessage": sendMessage})
 
     dispatcher = Dispatcher(mock_storage, mock_messenger)
     dispatcher.add_handlers(MessageStart())
@@ -70,6 +70,6 @@ def test_message_start_handler():
     assert clear_user_data_called
     assert update_user_state_called
 
-    assert len(send_message_calls) == 2
-    assert send_message_calls[0]["text"] == "🍕 Welcome to Pizza shop!"
-    assert send_message_calls[1]["text"] == "Please choose pizza type"
+    assert len(sendMessage_calls) == 2
+    assert sendMessage_calls[0]["text"] == "🍕 ПРИВЕТСТВУЕМ В ЛУЧШЕЙ ПИЦЦЕРИИ! 🍕"
+    assert sendMessage_calls[1]["text"] == "Пожалуйста, выберите тип пиццы:"

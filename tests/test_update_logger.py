@@ -1,5 +1,5 @@
 from bot.bot_core.dispatcher import Dispatcher
-from bot.handlers.update_database_logger import UpdateDatabaseLogger
+from bot.handlers.database_logger import DatabaseLogger
 
 from tests.mocks import Mock
 
@@ -46,7 +46,7 @@ def test_update_database_logger_execution():
     mock_messenger = Mock({})
 
     dispatcher = Dispatcher(mock_storage, mock_messenger)
-    update_logger = UpdateDatabaseLogger()
+    update_logger = DatabaseLogger()
     dispatcher.add_handlers(update_logger)
     dispatcher.dispatch(test_update)
 

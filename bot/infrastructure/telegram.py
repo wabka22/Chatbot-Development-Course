@@ -1,4 +1,5 @@
 import json
+import os
 import urllib.request
 
 from dotenv import load_dotenv
@@ -9,6 +10,13 @@ load_dotenv()
 
 
 class MessengerTelegram(Messenger):
+
+    def _get_telegram_base_uri(self) -> str:
+        return f"https://api.telegram.org/bot{os.getenv('TELEGRAM_TOKEN')}"
+
+    def _get_telegram_file_uri(self) -> str:
+        return f"https://api.telegram.org/file/bot{os.getenv('TELEGRAM_TOKEN')}"
+
     def _make_request(self, method: str, **kwargs) -> dict:
         json_data = json.dumps(kwargs).encode("utf-8")
 

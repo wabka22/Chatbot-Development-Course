@@ -34,8 +34,8 @@ class OrderResult(Handler):
         telegram_id = update["callback_query"]["from"]["id"]
         callback_data = update["callback_query"]["data"]
 
-        messenger.telegram_client.answer_callback_query(update["callback_query"]["id"])
-        messenger.telegram_client.deleteMessage(
+        messenger.answer_callback_query(update["callback_query"]["id"])
+        messenger.deleteMessage(
             chat_id=update["callback_query"]["message"]["chat"]["id"],
             message_id=update["callback_query"]["message"]["message_id"],
         )
@@ -57,7 +57,7 @@ class OrderResult(Handler):
 
 Отправьте /start для нового заказа."""
 
-            messenger.telegram_client.sendMessage(
+            messenger.sendMessage(
                 chat_id=update["callback_query"]["message"]["chat"]["id"],
                 text=order_confirmation,
                 parse_mode="Markdown",
@@ -67,13 +67,13 @@ class OrderResult(Handler):
             storage.clear_user_data(telegram_id)
             storage.update_user_state(telegram_id, "WAIT_FOR_PIZZA_NAME")
 
-            messenger.telegram_client.sendMessage(
+            messenger.sendMessage(
                 chat_id=update["callback_query"]["message"]["chat"]["id"],
                 text="Оформляем новый заказ 🍕 😊",
                 reply_markup=Keyboards.remove_keyboard(),
             )
 
-            messenger.telegram_client.sendMessage(
+            messenger.sendMessage(
                 chat_id=update["callback_query"]["message"]["chat"]["id"],
                 text="Пожалуйста, выберите тип пиццы:",
                 reply_markup=Keyboards.pizza_selection(),

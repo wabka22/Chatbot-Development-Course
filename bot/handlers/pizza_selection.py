@@ -34,25 +34,23 @@ class PizzaSelection(Handler):
         callback_data = update["callback_query"]["data"]
 
         pizza_name = callback_data.replace("pizza_", "").replace("_", " ").title()
-        storage.database_client.update_user_data(
-            telegram_id, {"pizza_name": pizza_name}
-        )
-        storage.database_client.update_user_state(telegram_id, "WAIT_FOR_PIZZA_SIZE")
-        messenger.telegram_client.answer_callback_query(update["callback_query"]["id"])
+        storage.update_user_data(telegram_id, {"pizza_name": pizza_name})
+        storage.update_user_state(telegram_id, "WAIT_FOR_PIZZA_SIZE")
+        messenger.answer_callback_query(update["callback_query"]["id"])
 
         chat_id = update["callback_query"]["message"]["chat"]["id"]
 
-        messenger.telegram_client.deleteMessage(
+        messenger.deleteMessage(
             chat_id=chat_id,
             message_id=update["callback_query"]["message"]["message_id"],
         )
 
-        messenger.telegram_client.deleteMessage(
+        messenger.deleteMessage(
             chat_id=chat_id,
             message_id=update["callback_query"]["message"]["message_id"] - 1,
         )
 
-        messenger.telegram_client.sendMessage(
+        messenger.sendMessage(
             chat_id=chat_id,
             text="👨‍🍳 Выберите размер пиццы:",
             reply_markup=Keyboards.size_selection(),

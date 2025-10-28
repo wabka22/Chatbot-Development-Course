@@ -6,23 +6,15 @@ git clone https://github.com/wabka22/Chatbot-Development-Course
 ```
 ```bash
 # Копирование примера файла окружения и его редактирование
-cd Chatbot-Development-Course && cp .env.base .env
+cp .env.base .env
 ```
 ```bash
-# Запуск скрипта(один раз при скачивании)
-source ./scripts/setup.sh
-```
-```bash
-# Инициализация базы данных
-python3 -m bot.recreate_database
+# Запуск тестов
+source ./scripts/test_start.sh
 ```
 ```bash
 # Запуск бота
-python3 -m bot
-```
-```bash
-# база данных
-sqlite3 <database>.sqlite
+source ./scripts/bot_start.sh
 ```
 ```bash
 # просмотр содержимого 

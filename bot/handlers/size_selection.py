@@ -42,17 +42,17 @@ class SizeSelection(Handler):
 
         pizza_size = size_mapping.get(callback_data)
         data["pizza_size"] = pizza_size
-        storage.database_client.update_user_data(telegram_id, data)
-        storage.database_client.update_user_state(telegram_id, "WAIT_FOR_DRINKS")
+        storage.update_user_data(telegram_id, data)
+        storage.update_user_state(telegram_id, "WAIT_FOR_DRINKS")
 
-        messenger.telegram_client.answer_callback_query(update["callback_query"]["id"])
+        messenger.answer_callback_query(update["callback_query"]["id"])
 
-        messenger.telegram_client.deleteMessage(
+        messenger.deleteMessage(
             chat_id=update["callback_query"]["message"]["chat"]["id"],
             message_id=update["callback_query"]["message"]["message_id"],
         )
 
-        messenger.telegram_client.sendMessage(
+        messenger.sendMessage(
             chat_id=update["callback_query"]["message"]["chat"]["id"],
             text="🍻 Выберите напиток к пицце:",
             reply_markup=Keyboards.drinks_selection(),
