@@ -17,13 +17,22 @@ source ./scripts/test_start.sh
 source ./scripts/bot_start.sh
 ```
 ```bash
-# просмотр содержимого 
-watch -n 1 "sqlite3 -cmd '.mode box' -cmd '.headers on' <database>.sqlite 'SELECT * FROM users ORDER BY id DESC LIMIT 1;'"
-```
-
-
+# Запуск контейнеров
 docker compose up -d
 
+# Остановка контейнеров
 docker compose down
 
+# Просмотр логов
+docker compose logs -f telegram_bot'"
+```
+```bash
+# Подключение к PostgreSQL
 docker compose exec postgres psql -U postgres -d pizza_bot
+
+# Просмотр последних пользователей (внутри psql)
+SELECT * FROM users ORDER BY id DESC LIMIT 5;
+
+# Просмотр логов базы данных в реальном времени
+watch -n 1 "docker compose exec postgres psql -U postgres -d pizza_bot -c 'SELECT * FROM users ORDER BY id DESC LIMIT 1;'"
+```

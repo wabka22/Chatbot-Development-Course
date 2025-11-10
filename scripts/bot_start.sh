@@ -1,46 +1,31 @@
 #!/bin/bash
 
-echo "Создание виртуального окружения..."
-if [ ! -d ".venv" ]; then
-    python3 -m venv .venv
-    echo "Виртуальное окружение создано"
-else
-    echo "Виртуальное окружение уже существует"
+echo "Запуск Pizza Bot с Docker Compose..."
+echo "Используются переменные из .env файла"
+
+# Проверяем наличие .env файла
+if [ ! -f ".env" ]; then
+    echo "ОШИБКА: Файл .env не найден!"
+    echo "Создай файл .env с переменными окружения"
+    exit 1
 fi
 
-echo "Активация виртуального окружения в текущей оболочке..."
-source .venv/bin/activate
+# Загружаем переменные из .env
+set -a
+source .env
+set +a
 
-echo "Обновление pip и установка основных зависимостей..."
-pip install --upgrade pip
-pip install python-dotenv black ruff pytest
-
-echo "Установка зависимостей из requirements.txt..."
-if [ -f "requirements.txt" ]; then
-    pip install -r requirements.txt
-    echo "Зависимости установлены"
-else
-    echo "Файл requirements.txt не найден"
+# Проверяем обязательные переменные
+if [ -z "$TELEGRAM_TOKEN" ] || [ "$TELEGRAM_TOKEN" = "твой_настоящий_токен_от_botfather" ]; then
+    echo "ОШИБКА: TELEGRAM_TOKEN не установлен в .env файле!"
+    echo "Получи токен от @BotFather в Telegram и добавь в .env"
+    exit 1
 fi
 
-echo "Обновление requirements.txt..."
-pip freeze > requirements.txt
+echo "Переменные окружения:"
+echo "POSTGRES_USER: $POSTGRES_USER"
+echo "POSTGRES_DATABASE: $POSTGRES_DATABASE"
+echo "POSTGRES_PORT: $POSTGRES_PORT"
 
-echo "Запуск форматирования кода black..."
-black .
-
-echo "Запуск проверки кода ruff..."
-ruff check . --fix
-
-echo "Запуск тестов..."
-pytest
-
-echo "Добавление корневой папки в PYTHONPATH..."
-export PYTHONPATH="/home/alexe/Chatbot-Development-Course:$PYTHONPATH"
-
-echo "Инициализация базы данных..."
-cd /home/alexe/Chatbot-Development-Course
-python3 -m bot.bot_core.recreate_database_postgres
-
-echo "Загрузка переменных окружения и запуск бота..."
-python3 -m bot
+# Запускаем Docker Compose
+docker compose up --build
