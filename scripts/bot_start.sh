@@ -35,8 +35,12 @@ ruff check . --fix
 echo "Запуск тестов..."
 pytest
 
+echo "Добавление корневой папки в PYTHONPATH..."
+export PYTHONPATH="/home/alexe/Chatbot-Development-Course:$PYTHONPATH"
+
 echo "Инициализация базы данных..."
-python3 bot/bot_core/recreate_database.py
+cd /home/alexe/Chatbot-Development-Course
+python3 -m bot.bot_core.recreate_database_postgres
 
 echo "Загрузка переменных окружения и запуск бота..."
 python3 -m bot

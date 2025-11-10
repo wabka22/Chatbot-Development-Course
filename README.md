@@ -20,3 +20,10 @@ source ./scripts/bot_start.sh
 # просмотр содержимого 
 watch -n 1 "sqlite3 -cmd '.mode box' -cmd '.headers on' <database>.sqlite 'SELECT * FROM users ORDER BY id DESC LIMIT 1;'"
 ```
+
+
+docker compose up -d
+
+docker compose down
+
+docker compose exec postgres psql -U postgres -d pizza_bot
