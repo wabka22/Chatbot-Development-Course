@@ -7,4 +7,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "-m", "bot"]
+CMD ruff check . && black --check . && \
+    python -m bot.bot_core.recreate_database_postgres && python -m bot
