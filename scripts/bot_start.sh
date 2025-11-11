@@ -1,8 +1,9 @@
 #!/bin/bash
-# set -e
+set -e
 
 echo "🍕 === Запуск Pizza Bot ==="
 
+# Проверка .env
 if [ ! -f ".env" ]; then
     echo "❌ Файл .env не найден!"
     echo "Создай его на основе .env.example:"
@@ -19,11 +20,11 @@ if [ -z "$TELEGRAM_TOKEN" ]; then
     exit 1
 fi
 
+# Проверка Docker Compose
 if ! command -v docker compose &> /dev/null; then
     echo "❌ Команда 'docker compose' не найдена!"
     exit 1
 fi
 
-echo "🚀 Запуск Docker Compose..."
-docker compose up -d --build
-echo "✅ Бот запущен!"
+echo "🚀 Сборка и запуск Docker..."
+docker compose up --build

@@ -1,6 +1,8 @@
 from bot.bot_core.dispatcher import Dispatcher
 from bot.handlers.pizza_selection import PizzaSelection
+from bot.domain.order_state import OrderState
 from tests.mocks import Mock
+import json
 
 
 def test_pizza_selection_handler():
@@ -8,37 +10,33 @@ def test_pizza_selection_handler():
         "update_id": 123456789,
         "callback_query": {
             "id": "test_callback_id",
-            "from": {
-                "id": 12345,
-                "is_bot": False,
-                "first_name": "Test",
-            },
-            "message": {
-                "message_id": 100,
-                "chat": {"id": 12345},
-            },
+            "from": {"id": 12345, "is_bot": False, "first_name": "Test"},
+            "message": {"message_id": 100, "chat": {"id": 12345}},
             "data": "pizza_margherita",
         },
     }
 
     update_user_data_called = False
-    update_user_state_called = False
+    get_user_called = False
 
-    def update_user_data(telegram_id: int, data: dict) -> None:
+    def update_user_data(telegram_id: int, **kwargs) -> None:
         assert telegram_id == 12345
-        assert data["pizza_name"] == "Margherita"
+        assert kwargs["state"] == OrderState.WAIT_FOR_PIZZA_SIZE
+        # order_json теперь словарь, а не строка
+        order_json = kwargs["order_json"]
+        assert order_json["pizza_name"] == "Margherita"
         nonlocal update_user_data_called
         update_user_data_called = True
 
-    def update_user_state(telegram_id: int, state: str) -> None:
-        assert telegram_id == 12345
-        assert state == "WAIT_FOR_PIZZA_SIZE"
-        nonlocal update_user_state_called
-        update_user_state_called = True
-
     def get_user(telegram_id: int) -> dict | None:
         assert telegram_id == 12345
-        return {"state": "WAIT_FOR_PIZZA_NAME", "data": {}}
+        nonlocal get_user_called
+        get_user_called = True
+        return {
+            "telegram_id": 12345,
+            "state": OrderState.WAIT_FOR_PIZZA_NAME,
+            "order_json": json.dumps({}),  # Пустой заказ (строка из базы)
+        }
 
     answer_callback_query_called = False
     delete_message_calls = []
@@ -63,10 +61,10 @@ def test_pizza_selection_handler():
     mock_storage = Mock(
         {
             "update_user_data": update_user_data,
-            "update_user_state": update_user_state,
             "get_user": get_user,
         }
     )
+
     mock_messenger = Mock(
         {
             "answer_callback_query": answer_callback_query,
@@ -80,7 +78,7 @@ def test_pizza_selection_handler():
     dispatcher.dispatch(test_update)
 
     assert update_user_data_called
-    assert update_user_state_called
+    assert get_user_called
     assert answer_callback_query_called
     assert len(delete_message_calls) == 2
     assert 100 in delete_message_calls

@@ -31,12 +31,24 @@ class Keyboards:
         return {
             "inline_keyboard": [
                 [
-                    {"text": "👶 Маленькая (25cm)", "callback_data": "size_small"},
-                    {"text": "👦 Средняя (30cm)", "callback_data": "size_medium"},
+                    {
+                        "text": "👶 Маленькая (25cm)",
+                        "callback_data": "size_small",
+                    },
+                    {
+                        "text": "👦 Средняя (30cm)",
+                        "callback_data": "size_medium",
+                    },
                 ],
                 [
-                    {"text": "👨 Большая (35cm)", "callback_data": "size_large"},
-                    {"text": "🎪 Супер большая (40cm)", "callback_data": "size_xl"},
+                    {
+                        "text": "👨 Большая (35cm)",
+                        "callback_data": "size_large",
+                    },
+                    {
+                        "text": "🎪 Огромная (40cm)",
+                        "callback_data": "size_xl",
+                    },
                 ],
             ]
         }

@@ -8,11 +8,7 @@ def test_ensure_user_exists_handler():
         "update_id": 123456789,
         "message": {
             "message_id": 1,
-            "from": {
-                "id": 12345,
-                "is_bot": False,
-                "first_name": "Test",
-            },
+            "from": {"id": 12345, "is_bot": False, "first_name": "Test"},
             "chat": {"id": 12345},
             "date": 1640995200,
             "text": "Test message",

@@ -1,5 +1,4 @@
 import json
-
 from bot.domain.messenger import Messenger
 from bot.domain.order_state import OrderState
 from bot.domain.storage import Storage
@@ -17,7 +16,6 @@ class SuccessfulPaymentHandler(Handler):
     ) -> bool:
         if "message" not in update:
             return False
-
         return "successful_payment" in update["message"]
 
     def handle(
@@ -29,30 +27,36 @@ class SuccessfulPaymentHandler(Handler):
         messenger: Messenger,
     ) -> HandlerStatus:
         telegram_id = update["message"]["from"]["id"]
-        successful_payment = update["message"]["successful_payment"]
+        chat_id = update["message"]["chat"]["id"]
 
-        # Parse payload to get order details
-        payload = json.loads(successful_payment["invoice_payload"])
-        pizza_name = payload.get("pizza_name", "Unknown")
-        pizza_size = payload.get("pizza_size", "Unknown")
-        drink = payload.get("drink", "Unknown")
-
-        # Update user state to ORDER_FINISHED
         storage.update_user_state(telegram_id, OrderState.ORDER_FINISHED)
 
-        order_confirmation = f"""✅ **Order Confirmed!**
-🍕 **Your Order:**
-• Pizza: {pizza_name}
-• Size: {pizza_size}
-• Drink: {drink}
+        user = storage.get_user(telegram_id)
 
-Thank you for your payment! Your pizza will be ready soon.
+        order_data = {}
+        if user and user.get("order_json"):
+            try:
+                order_data = json.loads(user["order_json"])
+            except json.JSONDecodeError:
+                order_data = {}
 
-Send /start to place another order."""
+        pizza_name = order_data.get("pizza_name", "Unknown")
+        pizza_size = order_data.get("pizza_size", "Unknown")
+        drink = order_data.get("drink", "Unknown")
 
-        # Send order confirmation message
+        order_confirmation = f"""✅ **Ваш заказ принят!**
+🍕 **Состав заказа:**
+• Пицца: {pizza_name}
+• Размер: {pizza_size}
+• Напиток: {drink}
+
+💳 Оплата успешно прошла — спасибо, что выбрали нас!  
+🔥 Ваш заказ уже готовится и скоро будет доставлен.
+
+Чтобы оформить новый заказ, отправьте команду **/start**."""
+
         messenger.sendMessage(
-            chat_id=update["message"]["chat"]["id"],
+            chat_id=chat_id,
             text=order_confirmation,
             parse_mode="Markdown",
         )

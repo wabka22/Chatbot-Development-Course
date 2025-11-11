@@ -1,9 +1,8 @@
-import json
-
 from bot.domain.messenger import Messenger
-from bot.domain.order_state import OrderState
 from bot.domain.storage import Storage
 from bot.handlers.handler import Handler, HandlerStatus
+from bot.bot_core.keyboards import Keyboards
+from bot.domain.order_state import OrderState
 
 
 class OrderApprovalRestartHandler(Handler):
@@ -15,14 +14,11 @@ class OrderApprovalRestartHandler(Handler):
         storage: Storage,
         messenger: Messenger,
     ) -> bool:
-        if "callback_query" not in update:
-            return False
-
-        if state != OrderState.WAIT_FOR_ORDER_APPROVE:
-            return False
-
-        callback_data = update["callback_query"]["data"]
-        return callback_data == "order_restart"
+        return (
+            "callback_query" in update
+            and state == OrderState.WAIT_FOR_ORDER_APPROVE
+            and update["callback_query"]["data"] == "order_restart"
+        )
 
     def handle(
         self,
@@ -33,55 +29,21 @@ class OrderApprovalRestartHandler(Handler):
         messenger: Messenger,
     ) -> HandlerStatus:
         telegram_id = update["callback_query"]["from"]["id"]
+        chat_id = update["callback_query"]["message"]["chat"]["id"]
 
         messenger.answer_callback_query(update["callback_query"]["id"])
-        messenger.deleteMessage(
-            chat_id=update["callback_query"]["message"]["chat"]["id"],
-            message_id=update["callback_query"]["message"]["message_id"],
-        )
 
         storage.clear_user_order_json(telegram_id)
+        storage.update_user_data(
+            telegram_id,
+            state=OrderState.WAIT_FOR_PIZZA_NAME,
+            order_json={},  # Пустой заказ
+        )
 
-        # Update user state to wait for pizza selection
-        storage.update_user_state(telegram_id, OrderState.WAIT_FOR_PIZZA_NAME)
-
-        # Send pizza selection message with inline keyboard
         messenger.sendMessage(
-            chat_id=update["callback_query"]["message"]["chat"]["id"],
-            text="Please choose pizza type",
-            reply_markup=json.dumps(
-                {
-                    "inline_keyboard": [
-                        [
-                            {
-                                "text": "Margherita",
-                                "callback_data": "pizza_margherita",
-                            },
-                            {
-                                "text": "Pepperoni",
-                                "callback_data": "pizza_pepperoni",
-                            },
-                        ],
-                        [
-                            {
-                                "text": "Quattro Stagioni",
-                                "callback_data": "pizza_quattro_stagioni",
-                            },
-                            {
-                                "text": "Capricciosa",
-                                "callback_data": "pizza_capricciosa",
-                            },
-                        ],
-                        [
-                            {"text": "Diavola", "callback_data": "pizza_diavola"},
-                            {
-                                "text": "Prosciutto",
-                                "callback_data": "pizza_prosciutto",
-                            },
-                        ],
-                    ],
-                },
-            ),
+            chat_id=chat_id,
+            text="🍕 Выберите пиццу:",
+            reply_markup=Keyboards.pizza_selection(),
         )
 
         return HandlerStatus.STOP
