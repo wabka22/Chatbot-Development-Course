@@ -1,5 +1,15 @@
-  pytest-with-docker-compose:
+name: pytest-with-docker-compose
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  test:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -19,12 +29,18 @@
         TELEGRAM_TOKEN=test_token
         EOF
 
-    - name: Start services with Docker Compose
+    - name: Start PostgreSQL
       run: |
         docker-compose up -d postgres
-        sleep 10  # Wait for PostgreSQL to be ready
+        echo "⏳ Ожидание готовности PostgreSQL..."
+        sleep 10
 
-    - name: Set up Python and run tests
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies and run tests
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
@@ -32,5 +48,4 @@
 
     - name: Stop services
       if: always()
-      run: |
-        docker-compose down
+      run: docker-compose down

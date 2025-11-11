@@ -1,5 +1,3 @@
-Chatbot-Development-Course
---------------------------------
 ```bash
 # Скачивание репозитория
 git clone https://github.com/wabka22/Chatbot-Development-Course

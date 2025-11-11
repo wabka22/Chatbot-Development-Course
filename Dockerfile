@@ -1,16 +1,10 @@
-#!/bin/bash
+FROM python:3.11-slim
 
-echo "=== ЗАПУСК ТЕСТОВ PIZZA BOT ==="
+WORKDIR /app
 
-echo "Активация виртуального окружения..."
-source .venv/bin/activate
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-echo "Запуск тестов..."
-pytest -v tests/
+COPY . .
 
-if [ $? -eq 0 ]; then
-    echo "✅ Все тесты прошли успешно! (8/8)"
-else
-    echo "❌ Некоторые тесты не прошли"
-    exit 1
-fi
+CMD ["python", "-m", "bot"]
