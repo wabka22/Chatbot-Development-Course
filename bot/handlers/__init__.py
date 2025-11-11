@@ -5,18 +5,22 @@ from bot.handlers.start_message import MessageStart
 from bot.handlers.pizza_selection import PizzaSelection
 from bot.handlers.size_selection import SizeSelection
 from bot.handlers.drink_selection import DrinkSelection
-from bot.handlers.order_result import OrderResult
-
-HANDLERS_CONFIG = [
-    DatabaseLogger,
-    EnsureUserExists,
-    MessageStart,
-    PizzaSelection,
-    SizeSelection,
-    DrinkSelection,
-    OrderResult,
-]
+from bot.handlers.pre_checkout_query import PreCheckoutQueryHandler
+from bot.handlers.successful_payment import SuccessfulPaymentHandler
+from bot.handlers.order_approved import OrderApprovalApprovedHandler
+from bot.handlers.order_restart import OrderApprovalRestartHandler
 
 
 def get_handlers() -> list[Handler]:
-    return [handler_class() for handler_class in HANDLERS_CONFIG]
+    return [
+        DatabaseLogger(),
+        EnsureUserExists(),
+        MessageStart(),
+        PizzaSelection(),
+        SizeSelection(),
+        DrinkSelection(),
+        OrderApprovalApprovedHandler(),
+        OrderApprovalRestartHandler(),
+        PreCheckoutQueryHandler(),
+        SuccessfulPaymentHandler(),
+    ]

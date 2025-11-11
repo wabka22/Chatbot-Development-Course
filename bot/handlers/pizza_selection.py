@@ -2,13 +2,14 @@ from bot.domain.messenger import Messenger
 from bot.domain.storage import Storage
 from bot.handlers.handler import Handler, HandlerStatus
 from bot.bot_core.keyboards import Keyboards
+from bot.domain.order_state import OrderState
 
 
 class PizzaSelection(Handler):
     def can_handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         data: dict,
         storage: Storage,
         messenger: Messenger,
@@ -16,7 +17,7 @@ class PizzaSelection(Handler):
         if "callback_query" not in update:
             return False
 
-        if state != "WAIT_FOR_PIZZA_NAME":
+        if state != OrderState.WAIT_FOR_PIZZA_NAME:
             return False
 
         callback_data = update["callback_query"]["data"]
@@ -25,7 +26,7 @@ class PizzaSelection(Handler):
     def handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         data: dict,
         storage: Storage,
         messenger: Messenger,
@@ -34,8 +35,10 @@ class PizzaSelection(Handler):
         callback_data = update["callback_query"]["data"]
 
         pizza_name = callback_data.replace("pizza_", "").replace("_", " ").title()
-        storage.update_user_data(telegram_id, {"pizza_name": pizza_name})
-        storage.update_user_state(telegram_id, "WAIT_FOR_PIZZA_SIZE")
+
+        data["pizza_name"] = pizza_name
+        storage.update_user_data(telegram_id, data)
+        storage.update_user_state(telegram_id, OrderState.WAIT_FOR_PIZZA_SIZE)
         messenger.answer_callback_query(update["callback_query"]["id"])
 
         chat_id = update["callback_query"]["message"]["chat"]["id"]

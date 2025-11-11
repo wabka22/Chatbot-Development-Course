@@ -3,6 +3,7 @@ import os
 import sqlite3
 from dotenv import load_dotenv
 from bot.domain.storage import Storage
+from bot.domain.order_state import OrderState
 
 load_dotenv()
 
@@ -48,7 +49,7 @@ class SqliteStorage(Storage):
                     }
                 return None
 
-    def update_user_state(self, telegram_id: int, state: str) -> None:
+    def update_user_state(self, telegram_id: int, state: OrderState) -> None:
         with sqlite3.connect(self.database_path) as connection:
             with connection:
                 connection.execute(

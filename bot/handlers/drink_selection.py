@@ -2,13 +2,14 @@ from bot.domain.messenger import Messenger
 from bot.domain.storage import Storage
 from bot.handlers.handler import Handler, HandlerStatus
 from bot.bot_core.keyboards import Keyboards
+from bot.domain.order_state import OrderState
 
 
 class DrinkSelection(Handler):
     def can_handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         data: dict,
         storage: Storage,
         messenger: Messenger,
@@ -16,7 +17,7 @@ class DrinkSelection(Handler):
         if "callback_query" not in update:
             return False
 
-        if state != "WAIT_FOR_DRINKS":
+        if state != OrderState.WAIT_FOR_DRINKS:
             return False
 
         callback_data = update["callback_query"]["data"]
@@ -25,7 +26,7 @@ class DrinkSelection(Handler):
     def handle(
         self,
         update: dict,
-        state: str,
+        state: OrderState,
         data: dict,
         storage: Storage,
         messenger: Messenger,
@@ -48,7 +49,7 @@ class DrinkSelection(Handler):
         data["drink"] = selected_drink
 
         storage.update_user_data(telegram_id, data)
-        storage.update_user_state(telegram_id, "WAIT_FOR_ORDER_APPROVE")
+        storage.update_user_state(telegram_id, OrderState.WAIT_FOR_ORDER_APPROVE)
         messenger.answer_callback_query(update["callback_query"]["id"])
 
         messenger.deleteMessage(
