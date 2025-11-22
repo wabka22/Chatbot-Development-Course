@@ -7,8 +7,8 @@ git clone https://github.com/wabka22/Chatbot-Development-Course
 cp .env.base .env
 ```
 ```bash
-# Запуск тестов
-source ./scripts/test_start.sh
+# Скачивание make 
+make install
 ```
 ```bash
 # Запуск бота
