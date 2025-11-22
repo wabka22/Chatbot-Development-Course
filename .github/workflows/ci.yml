@@ -1,13 +1,13 @@
-name: pytest-with-docker-compose
+name: CI
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, master ]
 
 jobs:
-  test:
+  code-quality:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,45 +15,31 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.13'
 
-    - name: Install Python dependencies
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run code style checks
+    - name: Run Black code style check
       run: |
-        ruff check .
-        black --check .
+        black --check bot/ tests/
 
-    - name: Set up Docker Compose
+    - name: Run Ruff linting check
       run: |
-        sudo apt-get update
-        sudo apt-get install -y docker-compose
+        ruff check bot/ tests/
 
-    - name: Create .env file for tests
-      run: |
-        cat > .env << EOF
-        POSTGRES_USER=postgres
-        POSTGRES_PASSWORD=postgres
-        POSTGRES_DATABASE=pizza_bot
-        POSTGRES_PORT=5432
-        TELEGRAM_TOKEN=test_token
-        EOF
-
-    - name: Start PostgreSQL
-      run: |
-        docker-compose up -d postgres
-        echo "⏳ Waiting for PostgreSQL..."
-        sleep 10
-
-    - name: Run tests
+    - name: Run pytest tests
       run: |
         PYTHONPATH=. pytest tests/ -v
-
-    - name: Stop services
-      if: always()
-      run: docker-compose down
