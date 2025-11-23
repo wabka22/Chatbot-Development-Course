@@ -18,7 +18,6 @@ pytest: $(VENV_DIR)
 
 test: black ruff pytest
 
-
 #
 # Docker commands
 #
@@ -74,7 +73,7 @@ run: docker_net
 	  --name $(BOT_CONTAINER) \
 	  --restart unless-stopped \
 	  -e POSTGRES_HOST="$(POSTGRES_CONTAINER)" \
-	  -e POSTGRES_PORT="(POSTGRES_CONTAINER_PORT)" \
+	  -e POSTGRES_PORT="$(POSTGRES_CONTAINER_PORT)" \
 	  -e POSTGRES_USER="$(POSTGRES_USER)" \
 	  -e POSTGRES_PASSWORD="$(POSTGRES_PASSWORD)" \
 	  -e POSTGRES_DATABASE="$(POSTGRES_DATABASE)" \
