@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 from dotenv import load_dotenv
@@ -27,7 +28,7 @@ class OrderApprovalApprovedHandler(Handler):
         callback_data = update["callback_query"]["data"]
         return callback_data == "order_approve"
 
-    def handle(
+    async def handle(
         self,
         update: dict,
         state: OrderState,
@@ -38,7 +39,7 @@ class OrderApprovalApprovedHandler(Handler):
         telegram_id = update["callback_query"]["from"]["id"]
         chat_id = update["callback_query"]["message"]["chat"]["id"]
 
-        user = storage.get_user(telegram_id)
+        user = await storage.get_user(telegram_id)
         current_order_json = (
             json.loads(user["order_json"]) if user["order_json"] else {}
         )
@@ -47,13 +48,14 @@ class OrderApprovalApprovedHandler(Handler):
         pizza_size = current_order_json.get("pizza_size", "Неизвестно")
         drink = current_order_json.get("drink", "Неизвестно")
 
-        messenger.answer_callback_query(update["callback_query"]["id"])
-        messenger.deleteMessage(
-            chat_id=chat_id,
-            message_id=update["callback_query"]["message"]["message_id"],
+        await asyncio.gather(
+            messenger.answer_callback_query(update["callback_query"]["id"]),
+            messenger.deleteMessage(
+                chat_id=chat_id,
+                message_id=update["callback_query"]["message"]["message_id"],
+            ),
+            storage.update_user_state(telegram_id, OrderState.WAIT_FOR_PAYMENT),
         )
-
-        storage.update_user_state(telegram_id, OrderState.WAIT_FOR_PAYMENT)
 
         pizza_prices = {
             "Маленькая (25cm)": 35000,
@@ -89,7 +91,7 @@ class OrderApprovalApprovedHandler(Handler):
             raise ValueError("YOOKASSA_TOKEN environment variable is not set")
 
         try:
-            messenger.send_invoice(
+            await messenger.send_invoice(
                 chat_id=update["callback_query"]["message"]["chat"]["id"],
                 title="Pizza Order",
                 description=f"Pizza: {pizza_name}, Size: {pizza_size}, Drink: {drink}",
@@ -101,10 +103,12 @@ class OrderApprovalApprovedHandler(Handler):
             print(f"Invoice sent successfully to user {telegram_id}")
         except Exception as e:
             print(f"Error sending invoice: {e}")
-            messenger.sendMessage(
+            await messenger.sendMessage(
                 chat_id=chat_id,
                 text=" Произошла ошибка при создании счета. Пожалуйста, попробуйте позже.",
             )
-            storage.update_user_state(telegram_id, OrderState.WAIT_FOR_ORDER_APPROVE)
+            await storage.update_user_state(
+                telegram_id, OrderState.WAIT_FOR_ORDER_APPROVE
+            )
 
         return HandlerStatus.STOP

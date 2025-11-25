@@ -18,7 +18,7 @@ class SuccessfulPaymentHandler(Handler):
             return False
         return "successful_payment" in update["message"]
 
-    def handle(
+    async def handle(
         self,
         update: dict,
         state: OrderState,
@@ -29,7 +29,7 @@ class SuccessfulPaymentHandler(Handler):
         telegram_id = update["message"]["from"]["id"]
         chat_id = update["message"]["chat"]["id"]
 
-        storage.update_user_state(telegram_id, OrderState.ORDER_FINISHED)
+        await storage.update_user_state(telegram_id, OrderState.ORDER_FINISHED)
 
         user = storage.get_user(telegram_id)
 
@@ -55,7 +55,7 @@ class SuccessfulPaymentHandler(Handler):
 
 Чтобы оформить новый заказ, отправьте команду **/start**."""
 
-        messenger.sendMessage(
+        await messenger.sendMessage(
             chat_id=chat_id,
             text=order_confirmation,
             parse_mode="Markdown",

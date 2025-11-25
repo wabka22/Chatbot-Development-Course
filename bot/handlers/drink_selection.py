@@ -1,3 +1,4 @@
+import asyncio
 from bot.domain.messenger import Messenger
 from bot.domain.storage import Storage
 from bot.handlers.handler import Handler, HandlerStatus
@@ -22,7 +23,7 @@ class DrinkSelection(Handler):
         callback_data = update["callback_query"]["data"]
         return callback_data.startswith("drink_")
 
-    def handle(
+    async def handle(
         self,
         update: dict,
         state: OrderState,
@@ -44,23 +45,11 @@ class DrinkSelection(Handler):
         }
         selected_drink = drink_mapping.get(callback_data)
 
-        user = storage.get_user(telegram_id)
+        user = await storage.get_user(telegram_id)
         order_json = json.loads(user["order_json"]) if user["order_json"] else {}
         order_json["drink"] = selected_drink
 
-        storage.update_user_data(
-            telegram_id,
-            state=OrderState.WAIT_FOR_ORDER_APPROVE,
-            order_json=order_json,
-        )
-
-        messenger.answer_callback_query(update["callback_query"]["id"])
         chat_id = update["callback_query"]["message"]["chat"]["id"]
-
-        messenger.deleteMessage(
-            chat_id=chat_id,
-            message_id=update["callback_query"]["message"]["message_id"],
-        )
 
         pizza_name = order_json.get("pizza_name", "Неизвестно")
         pizza_size = order_json.get("pizza_size", "Неизвестно")
@@ -74,10 +63,23 @@ class DrinkSelection(Handler):
 
 Всё верно?"""
 
-        messenger.sendMessage(
-            chat_id=chat_id,
-            text=order_summary,
-            parse_mode="Markdown",
-            reply_markup=Keyboards.order_confirmation(),
+        await asyncio.gather(
+            storage.update_user_data(
+                telegram_id,
+                state=OrderState.WAIT_FOR_ORDER_APPROVE,
+                order_json=order_json,
+            ),
+            messenger.answer_callback_query(update["callback_query"]["id"]),
+            messenger.deleteMessage(
+                chat_id=chat_id,
+                message_id=update["callback_query"]["message"]["message_id"],
+            ),
+            messenger.sendMessage(
+                chat_id=chat_id,
+                text=order_summary,
+                parse_mode="Markdown",
+                reply_markup=Keyboards.order_confirmation(),
+            ),
         )
+
         return HandlerStatus.STOP

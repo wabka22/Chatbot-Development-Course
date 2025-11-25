@@ -7,12 +7,16 @@ git clone https://github.com/wabka22/Chatbot-Development-Course
 cp .env.base .env
 ```
 ```bash
-# Скачивание make 
-make install
+# Запуск базы данных
+make postgres_run
+```
+```bash
+# Сборка проекта
+make build
 ```
 ```bash
 # Запуск бота
-source ./scripts/bot_start.sh
+make run
 ```
 ```bash
 # Запуск контейнеров

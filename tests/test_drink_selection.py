@@ -3,9 +3,11 @@ from bot.handlers.drink_selection import DrinkSelection
 from bot.domain.order_state import OrderState
 from tests.mocks import Mock
 import json
+import pytest
 
 
-def test_drink_selection_handler():
+@pytest.mark.asyncio
+async def test_drink_selection_handler():
     test_update = {
         "update_id": 123456789,
         "callback_query": {
@@ -19,10 +21,9 @@ def test_drink_selection_handler():
     update_user_data_called = False
     get_user_called = False
 
-    def update_user_data(telegram_id: int, **kwargs) -> None:
+    async def update_user_data(telegram_id: int, **kwargs) -> None:
         assert telegram_id == 12345
         assert kwargs["state"] == OrderState.WAIT_FOR_ORDER_APPROVE
-        # order_json теперь словарь, а не строка
         order_json = kwargs["order_json"]
         assert order_json["drink"] == "Coca-Cola"
         assert order_json["pizza_name"] == "Margherita"
@@ -30,7 +31,7 @@ def test_drink_selection_handler():
         nonlocal update_user_data_called
         update_user_data_called = True
 
-    def get_user(telegram_id: int) -> dict | None:
+    async def get_user(telegram_id: int) -> dict | None:
         assert telegram_id == 12345
         nonlocal get_user_called
         get_user_called = True
@@ -39,27 +40,27 @@ def test_drink_selection_handler():
             "state": OrderState.WAIT_FOR_DRINKS,
             "order_json": json.dumps(
                 {"pizza_name": "Margherita", "pizza_size": "Средняя (30cm)"}
-            ),  # Строка из базы
+            ),
         }
 
     answer_callback_query_called = False
     delete_message_called = False
     send_message_calls = []
 
-    def answer_callback_query(callback_query_id: str, **kwargs) -> dict:
+    async def answer_callback_query(callback_query_id: str, **kwargs) -> dict:
         assert callback_query_id == "test_callback_id"
         nonlocal answer_callback_query_called
         answer_callback_query_called = True
         return {"ok": True}
 
-    def deleteMessage(chat_id: int, message_id: int) -> dict:
+    async def deleteMessage(chat_id: int, message_id: int) -> dict:
         assert chat_id == 12345
         assert message_id == 100
         nonlocal delete_message_called
         delete_message_called = True
         return {"ok": True}
 
-    def sendMessage(chat_id: int, text: str, **kwargs) -> dict:
+    async def sendMessage(chat_id: int, text: str, **kwargs) -> dict:
         assert chat_id == 12345
         send_message_calls.append({"text": text, "kwargs": kwargs})
         return {"ok": True}
@@ -81,7 +82,7 @@ def test_drink_selection_handler():
 
     dispatcher = Dispatcher(mock_storage, mock_messenger)
     dispatcher.add_handlers(DrinkSelection())
-    dispatcher.dispatch(test_update)
+    await dispatcher.dispatch(test_update)
 
     assert update_user_data_called
     assert get_user_called

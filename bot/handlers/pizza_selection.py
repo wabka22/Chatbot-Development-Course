@@ -1,3 +1,4 @@
+import asyncio
 from bot.domain.messenger import Messenger
 from bot.domain.storage import Storage
 from bot.handlers.handler import Handler, HandlerStatus
@@ -22,7 +23,7 @@ class PizzaSelection(Handler):
         callback_data = update["callback_query"]["data"]
         return callback_data.startswith("pizza_")
 
-    def handle(
+    async def handle(
         self,
         update: dict,
         state: OrderState,
@@ -35,31 +36,33 @@ class PizzaSelection(Handler):
 
         pizza_name = callback_data.replace("pizza_", "").replace("_", " ").title()
 
-        user = storage.get_user(telegram_id)
+        user = await storage.get_user(telegram_id)
         order_json = json.loads(user["order_json"]) if user["order_json"] else {}
         order_json["pizza_name"] = pizza_name
 
-        storage.update_user_data(
+        await storage.update_user_data(
             telegram_id,
             state=OrderState.WAIT_FOR_PIZZA_SIZE,
             order_json=order_json,
         )
 
-        messenger.answer_callback_query(update["callback_query"]["id"])
         chat_id = update["callback_query"]["message"]["chat"]["id"]
 
-        messenger.deleteMessage(
-            chat_id=chat_id,
-            message_id=update["callback_query"]["message"]["message_id"],
-        )
-        messenger.deleteMessage(
-            chat_id=chat_id,
-            message_id=update["callback_query"]["message"]["message_id"] - 1,
+        await asyncio.gather(
+            messenger.answer_callback_query(update["callback_query"]["id"]),
+            messenger.deleteMessage(
+                chat_id=chat_id,
+                message_id=update["callback_query"]["message"]["message_id"],
+            ),
+            messenger.deleteMessage(
+                chat_id=chat_id,
+                message_id=update["callback_query"]["message"]["message_id"] - 1,
+            ),
+            messenger.sendMessage(
+                chat_id=chat_id,
+                text="👨‍🍳 Выберите размер пиццы:",
+                reply_markup=Keyboards.size_selection(),
+            ),
         )
 
-        messenger.sendMessage(
-            chat_id=chat_id,
-            text="👨‍🍳 Выберите размер пиццы:",
-            reply_markup=Keyboards.size_selection(),
-        )
         return HandlerStatus.STOP
